@@ -1,3 +1,7 @@
 .idea
 /DockerData
-/DockerShareArea
+/DockerShareArea/Elasticsearch
+/DockerShareArea/Mongo
+/DockerShareArea/Mysql
+/DockerShareArea/Php
+/ProjectSource
