@@ -1,0 +1,58 @@
+
+version: '3'
+
+services:
+  
+
+## --------------------------------------------
+## | 1 : web server nginx
+## --------------------------------------------
+  nginx:
+    build:
+      context: ./DockerConfig/Nginx
+      dockerfile: Dockerfile
+    expose:
+      - 80
+    ports:
+      - 80:80
+    restart: always
+    depends_on:
+      - php
+    volumes:
+      - ./DockerConfig/Nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./ProjectSource:/var/www/html
+  
+
+## --------------------------------------------
+## | 2 : application server
+## --------------------------------------------
+  php:
+    build:
+      context: ./DockerConfig/Php
+      dockerfile: Dockerfile
+    restart: always
+    expose:
+      - 9000
+    volumes:
+      - ./ProjectSource:/var/www/html/
+      - ./DockerConfig/Php/Config/upload.ini:/usr/local/etc/php/conf.d/upload.ini
+      - ./DockerShareArea/Php/:/DockerShareArea/
+  
+
+## --------------------------------------------
+## | 3 : database server
+## --------------------------------------------
+  mysqldb:
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE_NAME}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    expose:
+      - 3306
+    ports:
+      - ${MYSQL_PORT}:3306
+    volumes:
+      - ./DockerData/Mysql/:/var/lib/mysql
+      - ./DockerShareArea/Mysql/:/DockerShareArea/
+  

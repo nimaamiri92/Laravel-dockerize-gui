@@ -1,0 +1,188 @@
+version: '3'
+
+services:
+
+## --------------------------------------------
+## | 1 : web server nginx
+## --------------------------------------------
+  nginx:
+    build:
+      context: ./DockerConfig/Nginx
+      dockerfile: Dockerfile
+    expose:
+      - "80"
+    ports:
+      - "8888:80"
+    restart: always
+    depends_on:
+      - php
+    volumes:
+      - ./DockerConfig/Nginx/default.co nf:/etc/nginx/conf.d/default.conf
+      - ./ProjectSource:/var/www/html
+
+## --------------------------------------------
+## | 2 : application server
+## --------------------------------------------
+  php:
+    build:
+      context: ./DockerConfig/Php
+      dockerfile: Dockerfile
+    restart: always
+    expose:
+      - "9000"
+    volumes:
+      - ./ProjectSource:/var/www/html/
+      - ./DockerConfig/Php/Config/upload.ini:/usr/local/etc/php/conf.d/upload.ini
+      - ./DockerShareArea/Php/:/DockerShareArea/
+## --------------------------------------------
+## | 3 : database server
+## --------------------------------------------
+  mysqldb:
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_DATABASE=bccstyle
+      - MYSQL_ROOT_PASSWORD=123123
+    expose:
+      - "3306"
+    ports:
+      - "3308:3306"
+    volumes:
+      - "./DockerData/Mysql/:/var/lib/mysql"
+      - ./DockerShareArea/Mysql/:/DockerShareArea/
+
+## --------------------------------------------
+## | 4 : cache
+## --------------------------------------------
+  redis:
+    image: redis:4.0.10-alpine
+    expose:
+      - "6379"
+    command: [
+      "sh", "-c",'docker-entrypoint.sh --requirepass "12sjb12"'
+    ]
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./DockerConfig/Redis/default.conf:/usr/local/etc/redis/redis.conf
+
+## --------------------------------------------
+## | 5 : PhpMyAdmin
+## --------------------------------------------
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - mysqldb
+    expose:
+      - '80'
+      - '443'
+    environment:
+      - PMA_HOST=mysqldb
+    volumes:
+      - /sessions
+    ports:
+    - 8006:80
+
+
+## --------------------------------------------
+## | 6 : application queue server
+## --------------------------------------------
+  queued:
+    build:
+      context: ./DockerConfig/Queue
+      dockerfile: Dockerfile
+      args:
+        WWW_DATA_USER_ID: 1000
+    expose:
+      - "9001"
+    env_file:
+      - .env
+    ports:
+      - "9007:9001"
+    volumes:
+      - ./ProjectSource:/var/www/html
+      - ./DockerConfig/Php/Config/upload.ini:/usr/local/etc/php/conf.d/upload.ini
+
+## --------------------------------------------
+## | 7 : Elasticsearch search server
+## --------------------------------------------
+  elasticsearch:
+    build:
+      context: ./DockerConfig/Elasticsearch
+      dockerfile: Dockerfile
+      args:
+        - UID=1000
+        - GID=1000
+    environment:
+      - cluster.name=irantalent
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xmx2g -Xms2g"
+    #        - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    expose:
+      - "9200"
+    ports:
+      - "9201:9200"
+    volumes:
+      - ./DockerData/Elasticsearch/:/usr/share/elasticsearch/data
+      #- ./elasticsearch/config.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./DockerShareArea/Elasticsearch/:/DockerShareArea/
+
+## --------------------------------------------
+## | 8 : Kibana
+## --------------------------------------------
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.3.2
+    depends_on:
+      - elasticsearch
+    environment:
+      #        - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
+      #        - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./DockerConfig/Kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+
+## --------------------------------------------
+## | 9 : Redis Web Client
+## --------------------------------------------
+  phpredisadmin:
+    build:
+      context: ./DockerConfig/Phpredisadmin
+      dockerfile: Dockerfile
+    environment:
+      - ADMIN_USER=admin
+      - ADMIN_PASS=admin
+      - REDIS_1_HOST=redis
+      - REDIS_1_PORT=6379
+    links:
+      - redis
+    expose:
+      - "80"
+    ports:
+      - "8383:80"
+
+## -------------------------------------------------
+## | Mongodb
+## -------------------------------------------------
+  mongodb:
+    image: mongo:3.6.1
+    command: mongod
+    ports:
+      - "27019:27017"
+    volumes:
+      - ./DockerData/Mongo/:/data/db
+      - ./DockerShareArea/Mongo/:/DockerShareArea/
+
+## -------------------------------------------------
+## | Athena pdf (under development)
+## -------------------------------------------------
+#  athenaPdf:
+#    image: arachnysdocker/athenapdf-service
+#    ports:
+#      - "8090:8080"
+
