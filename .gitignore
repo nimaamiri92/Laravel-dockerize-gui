@@ -1,9 +1,4 @@
 .idea
-/DockerData/*
-/DockerShareArea/Elasticsearch/*
-/DockerShareArea/Mongo/*
-/DockerShareArea/Mysql/*
-/DockerShareArea/Php/*
 /ProjectSource/*
 .env
 docker-compose.yml.sample
