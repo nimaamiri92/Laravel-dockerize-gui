@@ -5,3 +5,5 @@
 /DockerShareArea/Mysql
 /DockerShareArea/Php
 /ProjectSource
+.env
+docker-compose.yml.sample

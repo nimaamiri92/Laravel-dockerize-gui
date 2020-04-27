@@ -11,7 +11,7 @@ function install_new_repository() {
 
     git clone $repo . &>/dev/null
 
-    whiptail --title "Hint" --colors --msgbox " Your project successfully downloaded in 'ProjectSource' folder" 6 104
+    whiptail --title "Hint"  --msgbox " Your project successfully downloaded in 'ProjectSource' folder" 6 104
 }
 
 function setup_your_code() {

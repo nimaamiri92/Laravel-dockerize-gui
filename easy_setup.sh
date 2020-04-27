@@ -77,5 +77,5 @@ do
 
     esac
 done
-whiptail --colors --title "\Zb\Z5 OK!" --msgbox "Your project successfully dockerized,enjoy it" 6 104
+whiptail  --title "\Zb\Z5 OK!" --msgbox "Your project successfully dockerized,enjoy it" 6 104
 clear
