@@ -78,12 +78,12 @@ function setup_mysql() {
     append_to_env "MYSQL_PORT=$port"
 
   database_name=$(screen_question "Ok,enter Mysql database name(default is TestDB): " "MYSQL")
-  database_name=${port:-TestDB}
+  database_name=${database_name:-TestDB}
 
   append_to_env "MYSQL_DATABASE_NAME=$database_name"
 
   database_root_password=$(screen_question "Ok,enter Mysql database root password(default is root): " "MYSQL")
-  database_root_password=${port:-root}
+  database_root_password=${database_root_password:-root}
 
   append_to_env "MYSQL_ROOT_PASSWORD=$database_root_password"
 
@@ -122,7 +122,7 @@ function setup_redis() {
     append_to_env "REDIS_PORT=$port"
 
   password=$(screen_question "Ok,enter REDIS database password(default is 123456): " "REDIS")
-  password=${port:-123456}
+  password=${password:-123456}
 
   append_to_env "REDIS_PASSWORD=$password"
 
@@ -218,7 +218,7 @@ function setup_elasticsearch() {
 
 
   cluster_name=$(screen_question "Ok,enter Elasticsearch cluster name(default is elasticsearch_cluster): " "ELASTICSEARCH")
-  cluster_name=${port:-elasticsearch_cluster}
+  cluster_name=${cluster_name:-elasticsearch_cluster}
 
   append_to_env "ELASTICSEARCH_CLUSTER_NAME=$cluster_name"
 
@@ -294,12 +294,12 @@ function setup_phpredisadmin() {
   append_to_env "REDIS_ADMIN_CLIENT_PORT=$port"
 
   username=$(screen_question "Ok,enter redis admin client username(default is admin): " "PHPREDISADMIN")
-  username=${port:-admin}
+  username=${username:-admin}
 
   append_to_env "REDIS_ADMIN_CLIENT_USERNAME=$username"
 
   password=$(screen_question "Ok,enter redis admin client password(default is admin): " "PHPREDISADMIN")
-  password=${port:-admin}
+  password=${password:-admin}
 
   append_to_env "REDIS_ADMIN_CLIENT_PASSWORD=$password"
 

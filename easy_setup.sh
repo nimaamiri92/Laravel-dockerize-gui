@@ -3,7 +3,11 @@ set -e
 # include needed functions
 . ./installationFunctions.sh
 . ./services.sh
-source ./.env
+
+if [[ ! -f .env ]];then
+  cp .env.sample .env
+fi
+
 
 if [ $(dpkg-query -W -f='${Status}' dialog 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
   printf "\x1b[31m >  whiptail is not installed on you system try to install it(sudo apt-get install whiptail) \x1b[0m \n"
@@ -77,5 +81,6 @@ do
 
     esac
 done
+source ./.env
 whiptail  --title "\Zb\Z5 OK!" --msgbox "Your project successfully dockerized,enjoy it" 6 104
 clear
