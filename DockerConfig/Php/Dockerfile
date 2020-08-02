@@ -23,7 +23,12 @@ RUN apt-get update && apt-get install -y \
     libssl1.0-dev \
     libpng-dev \
     libxml2-dev \
-    && docker-php-ext-install -j$(nproc) pdo pdo_mysql bcmath zip pcntl gd soap
+    && docker-php-ext-install -j$(nproc) pdo pdo_mysql bcmath zip pcntl gd soap \
+    && pecl install redis-4.1.1  \
+    && docker-php-ext-enable redis \
+    && pecl install mongodb \
+    && echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/ext-mongodb.ini
+
 
 #Add npm and nodejs
 RUN curl -sL https://deb.nodesource.com/setup_8.x |  bash - && apt-get install -y build-essential nodejs
